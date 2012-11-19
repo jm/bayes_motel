@@ -60,12 +60,6 @@ module BayesMotel
       @persistence.raw_counts(variable_name).each do |category, keys|
         cat = probs[category] ||= {}
 
-        # puts '--------------'
-        # puts "var name: #{variable_name}"
-        # puts "cat: #{category}"
-        # puts "keys: #{keys}"
-        # puts '--------------'
-
         probs[category] = probability(category, keys, variable_name, document)
       end
       return probs
@@ -78,9 +72,9 @@ module BayesMotel
     def doc_probability(category, keys, variable_name, document)
       doc_prob = 1
       TextHash.new(document).each do |word, count|
-        # puts "doc prob: #{doc_prob}"
+
         word_prob = word_probability(category, keys, variable_name, word, count)
-        # puts "#{category}: word_prob #{word}: #{word_prob}"
+
         doc_prob *= word_prob
       end
       return doc_prob
@@ -91,16 +85,10 @@ module BayesMotel
       #count how many total words we've seen for this category (eg ham) and variable (eg title)
 
       appearances = (keys[word.to_s] || 0).to_f
-      # puts "doc count #{word}: #{count}"
-      # puts "#{category} appear #{word}: #{appearances}"
-      # puts "#{category}: word_count: #{word_count}"
 
       prob = count.to_f * ((appearances + 1).to_f / word_count.to_f)
 
       prob
-      # cat["#{name}_#{k}_#{word}"] = Math.log(prob) * count
-
-      # (@words[category][word.stem].to_f + 1)/@categories_words[category].to_f
     end
 
     def category_probability(category)
@@ -132,46 +120,6 @@ module BayesMotel
       }
       probs
     end
-
-
-
-    # def _score(variables, name='', odds={})
-    #   variables.each_pair do |k, v|
-    #     case v
-    #     when Hash
-    #       _score(v, "#{name}_#{k}", odds)
-    #     else
-    #       th = TextHash.new(v)
-
-    #       #for each category eg. ham/spam
-    #       @persistence.raw_counts("#{name}_#{k}").each do |category, keys|
-    #         cat = odds[category] ||= {}
-
-    #         th.each do |word, count|
-    #           puts "category: #{category}"
-    #           puts "word: #{word}"
-    #           puts "count: #{count}"
-
-    #           puts "total count: #{@persistence.total_count}"
-
-    #           prob = ( (keys[word.to_s] || 0).to_f + 1 ) / @persistence.total_count
-
-    #           cat["#{name}_#{k}_#{word}"] = Math.log(prob) * count
-    #         end
-    #       end
-
-    #     end
-    #   end
-
-    #   odds.inject({}) do |memo, (key, value)|
-    #     memo[key] = value.inject(0) do |acc_memo, (acc_key, acc_value)|
-    #       puts "acc_key:#{acc_key}"
-    #       puts "acc_val:#{acc_value}"
-    #       acc_memo += acc_value
-    #     end
-    #     memo
-    #   end
-    # end
 
     def _training(variables, category, polarity="positive" , name='')
       variables.each_pair do |k, v|

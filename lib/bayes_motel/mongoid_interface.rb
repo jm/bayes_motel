@@ -40,23 +40,17 @@ module BayesMotel
         @nodes = BayesMotel::Mongoid::Node.where(:classifier => @classifier.id)
       end
 
-      def save_training(category, node_name, score, polarity)
+      def save_training(category_name, node_name, score, polarity)
+        category = BayesMotel::Mongoid::Category.where(:classifier => @classifier.id, :name => category_name).first || create_category(category_name)
 
         score.each do |word, count|
           incrementer = polarity == "positive" ? count : -count
 
-          category = BayesMotel::Mongoid::Category.where(:classifier => @classifier.id, :name => category).first || create_category(category)
-
-          if node = BayesMotel::Mongoid::Node.where(:classifier => @classifier.id, :category => category.id, :name => node_name, :value => word).first
-            node.incidence = node.incidence + incrementer
+          if node = BayesMotel::Mongoid::Node.find_or_initialize_by(:classifier => @classifier.id, :category => category.id, :name => node_name, :value => word)
+            node.incidence = node.incidence.to_f + incrementer
             node.save
-          else
-            node = create_node(category.id, node_name, word, incrementer)
           end
 
-          # node = BayesMotel::Mongoid::Node.where(:classifier => @classifier.id, :category => category.id, :name => node_name, :value => score).first ||
-          # puts "node: #{node.inspect}"
-          # polarity == "positive" ? node.incidence += 1 : node.incidence -= 1
           node
         end
         refresh_nodes

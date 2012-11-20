@@ -56,17 +56,21 @@ module BayesMotel
 
     private
 
-    def _log_probabilities(document, variable_name, probs = {})
+    def _probabilities(document, variable_name, probs = {})
+
       @persistence.raw_counts(variable_name).each do |category, keys|
         cat = probs[category] ||= {}
-
         probs[category] = probability(category, keys, variable_name, document)
       end
       return probs
     end
 
     def probability(category, keys, variable_name, document)
-      doc_probability(category, keys, variable_name, document) * category_probability(category)
+
+      doc_prob = doc_probability(category, keys, variable_name, document)
+      cat_prob = category_probability(category)
+
+      doc_prob * cat_prob
     end
 
     def doc_probability(category, keys, variable_name, document)
@@ -101,7 +105,7 @@ module BayesMotel
         when Hash
           _score(v, "#{name}_#{k}", probs)
         else
-          _log_probabilities(v, "#{name}_#{k}", probs)
+          _probabilities(v, "#{name}_#{k}", probs)
         end
       end
 
@@ -127,10 +131,7 @@ module BayesMotel
         when Hash
           _training(v, category, polarity, "#{name}_#{k}")
         else
-          th = TextHash.new(v)
-          th.each do |word, count|
-            @persistence.save_training(category, "#{name}_#{k}", {word.to_s => count}, polarity)
-          end
+          @persistence.save_training(category, "#{name}_#{k}", v, polarity)
         end
       end
     end

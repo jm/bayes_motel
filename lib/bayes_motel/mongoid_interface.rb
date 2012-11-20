@@ -40,18 +40,19 @@ module BayesMotel
         @nodes = BayesMotel::Mongoid::Node.where(:classifier => @classifier.id)
       end
 
-      def save_training(category_name, node_name, score, polarity)
-        category = BayesMotel::Mongoid::Category.where(:classifier => @classifier.id, :name => category_name).first || create_category(category_name)
+      def save_training(category_name, node_name, value, polarity)
+        category = BayesMotel::Mongoid::Category.find_or_create_by(:classifier => @classifier.id, :name => category_name)
 
-        score.each do |word, count|
+        th = TextHash.new(value)
+        th.each do |word, count|
+          word = word.to_s
           incrementer = polarity == "positive" ? count : -count
 
           if node = BayesMotel::Mongoid::Node.find_or_initialize_by(:classifier => @classifier.id, :category => category.id, :name => node_name, :value => word)
             node.incidence = node.incidence.to_f + incrementer
-            node.save
+            node.save!
           end
 
-          node
         end
         refresh_nodes
       end

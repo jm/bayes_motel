@@ -32,8 +32,10 @@ module BayesMotel
         count
       end
 
-      def save_training(category, node, score, polarity)
-        score.each do |word, count|
+      def save_training(category, node, value, polarity)
+        th = TextHash.new(value)
+        th.each do |word, count|
+          word = word.to_s
           incrementer = polarity == "positive" ? count : -count
           #If we haven't seen this v, we always treat polarity as positive.
           #Make it look like this: {@classifier=>{:data=>{node=>{category=>{score=>count,otherscore=>othercount}}}}

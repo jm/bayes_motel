@@ -71,16 +71,16 @@ class MongoidInterfaceTest < Test::Unit::TestCase
   should "calculate score for nested documents" do
     mm = BayesMotel::Persistence::MongoidInterface.new("test-score")
     c = BayesMotel::Corpus.new(mm)
-    c.train({ :something => 'foo', :kids => { :bar => 'whiz', :id => 123 } }, :ham)
-    c.train({ :something => 'foo', :kids => { :bar => 'gee', :id => 145 } }, :spam)
+    c.train({ :something => 'foo', :kids => { :bar => 'whiz' } }, :ham)
+    c.train({ :something => 'foo', :kids => { :bar => 'gee' } }, :spam)
 
-    doc = { :something => 'foo', :kids => { :bar => 'gee', :id => 167, :ack => 'blag' }}
+    doc = { :something => 'foo', :kids => { :bar => 'gee' }  }
     results = c.score(doc)
     assert results
     assert_equal 2, results.size
 
-    assert_equal results[:spam], 2*results[:ham]
+    assert_equal 2*results[:ham], results[:spam]
 
-    assert_equal :spam, c.classify(doc).first
+    # assert_equal :spam, c.classify(doc).first
   end
 end

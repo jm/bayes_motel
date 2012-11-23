@@ -2,6 +2,30 @@ require 'helper'
 
 class TrainingTest < Test::Unit::TestCase
 
+  should "classify correctly with only one training document" do
+    mm = BayesMotel::Persistence::MemoryInterface.new("test")
+    c = BayesMotel::Corpus.new(mm)
+    c.train({ :something => 'foo' }, :ham)
+
+    results = c.score({ :something => 'bar' })
+    assert results
+    assert_equal results[:ham], 0
+
+    results = c.score({ :something => 'foo' })
+    assert results
+    assert_equal results[:ham], 1
+  end
+
+  should 'classify correctly with no training documents' do
+    mm = BayesMotel::Persistence::MemoryInterface.new("test")
+    c = BayesMotel::Corpus.new(mm)
+
+    results = c.score({ :something => 'bar' })
+    assert results
+    assert_equal results, {}
+  end
+
+
   should "handle basic training" do
     mm = BayesMotel::Persistence::MemoryInterface.new("test")
     c = BayesMotel::Corpus.new(mm)

@@ -66,8 +66,8 @@ module BayesMotel
     end
 
     def probability(category, keys, variable_name, document)
-
       doc_prob = doc_probability(category, keys, variable_name, document)
+
       cat_prob = category_probability(category)
 
       doc_prob * cat_prob
@@ -86,11 +86,12 @@ module BayesMotel
 
     def word_probability(category, keys, variable_name, word, count)
       word_count = @persistence.word_count(variable_name, category)
+      return 0 if word_count.eql?(0)
       #count how many total words we've seen for this category (eg ham) and variable (eg title)
 
       appearances = (keys[word.to_s] || 0).to_f
 
-      prob = count.to_f * ((appearances + 1).to_f / word_count.to_f)
+      prob = count.to_f * (appearances.to_f / word_count.to_f)
 
       prob
     end

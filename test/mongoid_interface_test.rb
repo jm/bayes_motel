@@ -78,9 +78,8 @@ class MongoidInterfaceTest < Test::Unit::TestCase
     results = c.score(doc)
     assert results
     assert_equal 2, results.size
+    assert results[:spam] > results[:ham]
 
-    assert_equal 2*results[:ham], results[:spam]
-
-    # assert_equal :spam, c.classify(doc).first
+    assert_equal :spam, c.classify(doc).first
   end
 end

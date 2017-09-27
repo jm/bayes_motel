@@ -32,7 +32,7 @@ Usage
     a = {"a"=>1,"b"=>2}
     b = {"a"=>0,"b"=>1}
 
-#Testing In Memory
+# Testing In Memory
 
     mm = BayesMotel::Persistence::MemoryInterface.new("spamfilter1")
     cmm = BayesMotel::Corpus.new(mm)
@@ -50,7 +50,7 @@ Usage
     cmm.destroy_document(a, 1) 
     cmm.score(a)  
 
-#Testing Mongo
+# Testing Mongo
 
     mo = BayesMotel::Persistence::MongomapperInterface.new("spamfilter2")
 
@@ -71,7 +71,7 @@ Usage
     cmo.destroy_document(a, 1) 
     cmo.score(a) 
 
-#Testing the save_to_mongo above
+# Testing the save_to_mongo above
 
     smo = BayesMotel::Persistence::MongomapperInterface.new("spamfilter1")
 
